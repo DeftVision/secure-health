@@ -42,4 +42,38 @@ router.post('/', authenticate, authorizeRoles('client'), async (req, res) => {
     }
 });
 
+
+router.get('/mine', authenticate, authorizeRoles('client', 'therapist'), async (req, res) => {
+    const { id: userId, role } = req.user;
+
+    try {
+        let query = db('appointments')
+            .join('availability_slots', 'appointments.availability_slot_id', 'availability_slots.id')
+            .select(
+                'appointments.id as appointment_id',
+                'appointments.created_at as booked_at',
+                'availability_slots.start_time',
+                'availability_slots.end_time',
+                'appointments.therapist_id',
+                'appointments.client_id'
+            )
+            .orderBy('availability_slots.start_time', 'asc');
+
+        // Role-based filtering
+        if (role === 'client') {
+            query = query.where('appointments.client_id', userId);
+        } else if (role === 'therapist') {
+            query = query.where('appointments.therapist_id', userId);
+        }
+
+        const appointments = await query;
+
+        res.json({ appointments });
+    } catch (err) {
+        console.error('Error fetching appointments:', err);
+        res.status(500).json({ error: 'Could not retrieve appointments.' });
+    }
+});
+
+
 module.exports = router;
