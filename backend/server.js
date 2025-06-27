@@ -12,6 +12,12 @@ const port = process.env.PORT || 5001;
 const protectedRoutes = require('./routes/protected.routes');
 const availabilityRoutes = require('./routes/availability.routes');
 const appointmentRoutes = require('./routes/appointments.routes');
+const notesRoutes = require('./routes/notes.routes');
+
+
+
+
+
 
 // Security & parsing middleware
 app.use(helmet());             // Sets secure HTTP headers
@@ -23,16 +29,12 @@ app.use('/auth', authRoutes);
 app.use('/protected', protectedRoutes);
 app.use('/availability', availabilityRoutes);
 app.use('/appointments', appointmentRoutes);
-
+app.use('/notes', notesRoutes);
 
 
 
 
 // Base route
-app.get('/', (req, res) => {
-    res.status(200).json({ message: 'Secure Health API is running.' });
-});
-
 app.get('/', async (req, res) => {
     try {
         const result = await db.query('SELECT NOW()');
