@@ -11,7 +11,7 @@ const app = express();
 const port = process.env.PORT || 5001;
 const protectedRoutes = require('./routes/protected.routes');
 const availabilityRoutes = require('./routes/availability.routes');
-
+const appointmentRoutes = require('./routes/appointments.routes');
 
 // Security & parsing middleware
 app.use(helmet());             // Sets secure HTTP headers
@@ -22,6 +22,11 @@ app.use(morgan('dev'));        // Logs HTTP requests (dev format)
 app.use('/auth', authRoutes);
 app.use('/protected', protectedRoutes);
 app.use('/availability', availabilityRoutes);
+app.use('/appointments', appointmentRoutes);
+
+
+
+
 
 // Base route
 app.get('/', (req, res) => {
