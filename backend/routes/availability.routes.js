@@ -34,4 +34,27 @@ router.post('/', authenticate, authorizeRoles('therapist'), async (req, res) => 
     }
 });
 
+
+router.get('/:therapistId', authenticate, authorizeRoles('client', 'therapist'), async (req, res) => {
+    const { therapistId } = req.params;
+
+    try {
+        const slots = await db('availability_slots')
+            .where({ therapist_id: therapistId })
+            .andWhere('start_time', '>', new Date()) // only future slots
+            .orderBy('start_time', 'asc');
+
+        res.json({ slots });
+    } catch (err) {
+        console.error('Error fetching availability:', err);
+        res.status(500).json({ error: 'Could not retrieve availability.' });
+    }
+});
+
+
+
+
+
+
+
 module.exports = router;
