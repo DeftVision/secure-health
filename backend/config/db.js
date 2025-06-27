@@ -1,21 +1,7 @@
-const { Pool } = require('pg');
+const knex = require('knex');
+const knexConfig = require('../knexfile');
 
-const pool = new Pool({
-    host: process.env.DB_HOST,
-    port: process.env.DB_PORT,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASS,
-    database: process.env.DB_NAME,
-    ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
-});
+const db = knex(knexConfig[process.env.NODE_ENV || 'development']);
 
-pool.on('connect', () => {
-    console.log('Connected to PostgreSQL');
-});
+module.exports = db;
 
-pool.on('error', (err) => {
-    console.error('PostgreSQL connection error:', err);
-    process.exit(-1);
-});
-
-module.exports = pool;
